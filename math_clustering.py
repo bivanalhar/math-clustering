@@ -17,13 +17,12 @@ import csv
 #(we need to focus entirely on the Math formula itself instead of the details surrounding it)
 math_formula = ""
 for i in range(len(text_ocr)):
-	if (ord(text_ocr[i]) > 44032) and (ord(text_ocr[i]) > 55203): #the text is not korean alphabet
+	if (ord(text_ocr[i]) > 44032) and (ord(text_ocr[i]) < 55203): #the text is not korean alphabet
 		math_formula = math_formula + " " #change into space
 	else:
 		math_formula = math_formula + text_ocr[i] #keep the non-korean variable intact
 math_formula = math_formula.strip() #omit the collection of spaces in the beginning and the end
-math_formula_list = math_formula.split() #purpose is to reduce the space between words into only one space
-math_formula = " ".join(math_formula_list) #get the final version of the math expression
+math_formula = " ".join(math_formula.split()) #get the final version of the math expression
 
 #Phase 3 : Do the real clustering
 #(will think about it soon enough)
