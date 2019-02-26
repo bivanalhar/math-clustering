@@ -35,5 +35,14 @@ with open("barista_data.csv") as barista_csv:
 			database_math.append(pair_store)
 
 #Phase 3 : Do the real clustering
-#(will think about it soon enough)
 
+#at this point, the variable database_math contains all the questions from Barista file.
+#we need to split the list into 70:15:15, while 70% will be used for the training file,
+#15% will be used for the validation file and the rest is for testing file
+
+data_num = len(database_math)
+data_70, data_85 = int(data_num * 0.70), int(data_num * 0.85)
+
+database_train = database_math[:data_70]
+database_val = database_math[data_70:data_85]
+database_test = database_math[data_85:]
