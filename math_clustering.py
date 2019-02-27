@@ -15,10 +15,10 @@ import csv
 def formula_parse(text_ocr):
 	math_formula = ""
 	for i in range(len(text_ocr)):
-		if (ord(text_ocr[i]) >= 44032) and (ord(text_ocr[i]) <= 55203): #the text is korean alphabet (hence omitted)
-			math_formula = math_formula + " " #change into space
+		if (ord(text_ocr[i]) >= 32) and (ord(text_ocr[i]) <= 126): #the text is latin alphabet (hence included)
+			math_formula = math_formula + text_ocr[i] #change into space
 		else:
-			math_formula = math_formula + text_ocr[i] #keep the non-korean variable intact
+			math_formula = math_formula + " " #keep the non-korean variable intact
 	math_formula = math_formula.strip() #omit the collection of spaces in the beginning and the end
 	math_formula = " ".join(math_formula.split()) #get the final version of the math expression
 
@@ -29,10 +29,17 @@ database_math = [] #the list to contain all the problems from the barista file
 
 with open("barista_data.csv") as barista_csv:
 	barista_reader = csv.reader(barista_csv, delimiter = ",")
+	
+	#firstrow, secondrow = next(barista_reader), next(barista_reader)
+	#print(firstrow[2], firstrow[13], firstrow[-1])
+	
 	for row in barista_reader:
-		if (row[8] == "mathpresso_ocr"): #need to change after looking at the real csv file
-			pair_store = (row[2], formula_parse(row[-1]))
+		if (row[13] == "mathpresso_ocr"): #need to change after looking at the real csv file
+			pair_store = (row[2], row[-1],  formula_parse(row[-1]))
 			database_math.append(pair_store)
+
+database_math = database_math[1:]
+print("The number of Barista questions are", len(database_math))
 
 #Phase 3 : Do the real clustering
 
