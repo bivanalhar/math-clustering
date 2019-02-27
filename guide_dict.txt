@@ -1,0 +1,5 @@
+( preprocess reference ) 
+https://github.com/mathpresso/qanda-haystack/blob/master/qanda_haystack/document/utils.py
+
+( dictionary )
+https://github.com/mathpresso/Siamese-Network-Math-Problem/blob/master/Projects/OCR_Paged_Tagged_0.7M/scripts/helper_scripts/tokens.py

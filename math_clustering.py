@@ -35,21 +35,22 @@ with open("barista_data.csv") as barista_csv:
 	
 	for row in barista_reader:
 		if (row[13] == "mathpresso_ocr"): #need to change after looking at the real csv file
-			pair_store = (row[2], row[-1],  formula_parse(row[-1]))
+			pair_store = (row[4], row[-1],  formula_parse(row[-1]))
 			database_math.append(pair_store)
 
 database_math = database_math[1:]
 print("The number of Barista questions are", len(database_math))
 
-#Phase 3 : Do the real clustering
+#Phase 3 : Do the classification of the problem
 
-#at this point, the variable database_math contains all the questions from Barista file.
-#we need to split the list into 70:15:15, while 70% will be used for the training file,
-#15% will be used for the validation file and the rest is for testing file
+#For the current phase, we will try to do the simple classification only based on keywords
+#By considering that usually one type of problem has some specific keywords in its math
+#expression (for example, the expression lim and dx belongs to the differential equation)
 
-data_num = len(database_math)
-data_70, data_85 = int(data_num * 0.70), int(data_num * 0.85)
+diff_eqn = []
+for i in range(len(database_math)):
+	if ("lim" in database_math[i][2]) or ("d/d" in database_math[i][2]):
+		diff_eqn.append((database_math[i][0], database_math[i][1]))
 
-database_train = database_math[:data_70]
-database_val = database_math[data_70:data_85]
-database_test = database_math[data_85:]
+for i in range(len(diff_eqn)):
+	print(diff_eqn[i])
