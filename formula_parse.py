@@ -18,7 +18,7 @@ def detect_end(formula, start):
 
 def inner_formula(formula, start):
 	#to return the formula contained within the bigger formula
-	return formula[start:detect_end(formula, start)]
+	return formula[start+1:detect_end(formula, start)]
 
 def formula_parse(formula):
 	#first phase is to detect the important words (current stage is just frac and int)
@@ -31,10 +31,12 @@ def formula_parse(formula):
 
 		elif formula[1:5] == "frac": #handling the regular fraction
 			start =  formula.index("{")
-			end_1 = detect_end(formula, start)
-			return ["\\frac", formula_parse(inner_formula(formula, start)), formula_parse(inner_formula(formula, end_1))]
+			end_1 = detect_end(formula, start) + 1
+			print(end_1)
+			return ["\\frac", formula_parse(inner_formula(formula, start)),  formula_parse(inner_formula(formula, end_1))]
 		
-		else: #handling some other formula
-			return [formula]
+	else: #handling some other formula
+		return [formula]
 
-print(formula_parse("\\int{3x^2-2x+1}dx"))
+print(inner_formula("\\frac{4x-2}{\int{2x^2-4x+1}dx}", 5))
+print(formula_parse("\\int{\\frac{3x+1}{5x-3}}dx"))
