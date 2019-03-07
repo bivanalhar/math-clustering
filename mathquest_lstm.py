@@ -6,7 +6,7 @@ Calculus, Linear Algebra and Probability & Statistics
 
 import tensorflow as tf
 import numpy as np
-import pandas as pd
+import random, collections, time
 import csv
 
 """
@@ -14,5 +14,6 @@ Model to be implemented : Long Short-Term Memory (LSTM)
 which is believed to be able to depict the continuation of the problem's story
 """
 
-df = pd.read_csv("./eng_linalg.csv", delimiter = ",", encoding = "latin-1")
-df.head()
+wordsList = np.load('wordsList.npy').tolist()
+wordsList = [word.decode('UTF-8') for word in wordsList]
+wordVectors = np.load('wordVectors.npy')
