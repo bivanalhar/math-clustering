@@ -115,7 +115,7 @@ with open('eng_probstat.csv', mode = 'w') as probstat_file:
 
 with open('eng_engineering.csv', mode = 'w') as engineering_file:
 	fieldnames = ['question_id', 'text_contain']
-	writer = csv.DictWriter(calculus_file, fieldnames = fieldnames)
+	writer = csv.DictWriter(engineering_file, fieldnames = fieldnames)
 
 	writer.writeheader()
 	for i in range(len(database_engineering)):
