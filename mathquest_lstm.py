@@ -14,19 +14,66 @@ Model to be implemented : Long Short-Term Memory (LSTM)
 which is believed to be able to depict the continuation of the problem's story
 """
 
+calculus_data, linalg_data, probstat_data = [], [], []
+
+def one_hot(label): #supporting the 3 labels for now
+	return [float(label == '0'), float(label == '1'), float(label == '2')]
+
+#Phase 1 : Preprocessing the input files
+with open('eng_calculus.csv') as csv_file:
+	csv_reader = csv.reader(csv_file, delimiter = ",")
+	for row in csv_reader:
+		pair = (row[1], one_hot(row[2]))
+		calculus_data.append(pair)
+
+with open('eng_linalg.csv') as csv_file:
+	csv_reader = csv.reader(csv_file, delimiter = ",")
+	for row in csv_reader:
+		pair = (row[1], one_hot(row[2]))
+		linalg_data.append(pair)
+
+with open('eng_probstat.csv') as csv_file:
+	csv_reader = csv.reader(csv_file, delimiter = ",")
+	for row in csv_reader:
+		pair = (row[1], one_hot(row[2]))
+		probstat_data.append(pair)
+
+len_calculus = len(calculus_data)
+len_linalg = len(linalg_data)
+len_probstat = len(probstat_data)
+
+#setting up the dataset for training, validation and testing
+train_fetch = calculus_data[:int(0.7*len_calculus)] + linalg_data[:int(0.7*len_linalg)] \
+	+ probstat_data[:int(0.7*len_probstat)]
+val_fetch = calculus_data[int(0.7*len_calculus):int(0.85*len_calculus)] \
+	+ linalg_data[int(0.7*len_linalg):int(0.85*len_linalg)] \
+	+ probstat_data[int(0.7*len_probstat):int(0.85*len_probstat)]
+test_fetch = calculus_data[int(0.85*len_calculus):] + linalg_data[int(0.85*len_linalg):] \
+	+ probstat_data[int(0.85*len_probstat):]
+
+train_data, train_label = [pair[0] for pair in train_fetch], [pair[1] for pair in train_fetch]
+val_data, val_label = [pair[0] for pair in val_fetch], [pair[1] for pair in val_fetch]
+test_data, test_label = [pair[0] for pair in test_fetch], [pair[1] for pair in test_fetch] 
+#######################################END OF PHASE 1########################################
+
+#Testing the length of string to determine the maximum sequential length
+num_words = []
+for sentence in train_data + val_data + test_data:
+	num_words.append(len(sentence.split()))
+print(num_words.max())
+
 #including all words and also its corresponding vectors
 wordsList = np.load('wordsList.npy').tolist()
 wordsList = [word.decode('UTF-8') for word in wordsList]
 wordVectors = np.load('wordVectors.npy')
 
+#Phase 2 : Setting up the network architecture
 numClasses = 3 # Linear Algebra, Calculus, Probability and Statistics
 maxSeqLength = 200 # to keep up with some lengthy problems
-batchSize = 32
-lstmUnits = 64
-numDimensions = 10
-
-#start to create the graph for the evaluation
-tf.reset_default_graph()
+batchSize = 32 #to split the dataset into batches to prevent overflowing of the data
+lstmUnits = 64 #number of units for LSTM
+numDimensions = 10 #number of nodes in the hidden layer
+training_epoch = 50
 
 #defining the input of the network
 labels = tf.placeholder(tf.float32, [batchSize, numClasses])
@@ -46,6 +93,8 @@ bias = tf.Variable(tf.constant(0.1, shape = [numClasses]))
 value = tf.transpose(value, [1, 0, 2])
 last = tf.gather(value, int(value.get_shape()[0]) - 1)
 prediction = tf.matmul(last, weight) + bias
+#######################################END OF PHASE 2########################################
+
 
 #defining the metric used for the evaluation sake
 correctPred = tf.equal(tf.argmax(prediction, 1), tf.argmax(labels, 1))
@@ -54,3 +103,17 @@ accuracy = tf.reduce_mean(tf.cast(correctPred, tf.float32))
 #defining the loss and also the optimizer for the network
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels))
 optimizer = tf.train.AdamOptimizer().minimize(loss)
+
+init_op = tf.global_variables_initializer()
+
+# #Phase 3 : Setting up the starting of the network evaluation (session setup)
+
+# with tf.Session() as sess:
+# 	sess.run(init_op)
+
+# 	for epoch in range(training_epoch):
+# 		ptr = 0
+# 		no_of_batches = int(len(train_data) / batchSize)
+
+# 		for i in range(no_of_batches):
+# 			batch_in, batch_out = 
