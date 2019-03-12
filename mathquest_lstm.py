@@ -8,6 +8,11 @@ import tensorflow as tf
 import numpy as np
 import random, collections, time
 import csv, re
+import matplotlib
+
+matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
 
 """
 Model to be implemented : Long Short-Term Memory (LSTM)
@@ -167,7 +172,7 @@ maxSeqLength = 100 # to keep up with some lengthy problems
 batchSize = 32 #to split the dataset into batches to prevent overflowing of the data
 lstmUnits = 64 #number of units for LSTM
 numDimensions = 10 #number of nodes in the hidden layer
-training_epoch = 100
+training_epoch = 1000
 
 #defining the input of the network
 labels = tf.placeholder(tf.float32, [None, numClasses])
@@ -197,9 +202,12 @@ with tf.device("/gpu:0"):
 
 	#defining the loss and also the optimizer for the network
 	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels))
-	optimizer = tf.train.AdamOptimizer(learning_rate = 3e-4).minimize(loss)
+	optimizer = tf.train.AdamOptimizer(learning_rate = 1e-4).minimize(loss)
 
 	init_op = tf.global_variables_initializer()
+
+f = open("result_lstm_190213.txt", 'w')
+f.write("Result of the Experiment\n\n")
 
 # #Phase 3 : Setting up the starting of the network evaluation (session setup)
 
@@ -244,6 +252,9 @@ with open('test_label.csv') as csv_file:
 		label_input = [float(i) for i in row]
 		test_label_sess.append(label_input)
 
+f.write("Setup : LSTM Units = " + str(lstmUnits) + "\n\n")
+epoch_list, cost_list = [], []
+
 with tf.Session() as sess:
 	sess.run(init_op)
 
@@ -259,12 +270,25 @@ with tf.Session() as sess:
 			_, cost = sess.run([optimizer, loss], feed_dict = {input_data : batch_in, labels : batch_out})
 			total_cost += cost / batchSize
 
-		print("Loss value in epoch", epoch + 1, total_cost)
+		epoch_list.append(epoch + 1)
+		cost_list.append(total_cost)
 
-	train_acc = sess.run(accuracy, feed_dict = {input_data : train_data_sess, labels : train_label_sess})
-	val_acc = sess.run(accuracy, feed_dict = {input_data : val_data_sess, labels : val_label_sess})
-	test_acc = sess.run(accuracy, feed_dict = {input_data : test_data_sess, labels : test_label_sess})
+		print("Epoch", epoch + 1, "finished")
 
-	print("Training Accuracy :", train_acc * 100, "percent")
-	print("Validation Accuracy :", val_acc * 100, "percent")
-	print("Testing Accuracy :", test_acc * 100, "percent")
+		if epoch in [9, 19, 29, 49, 99, 199, 299, 499, 699, 999]:
+			f.write("During the " + str(epoch + 1) + "-th epoch:\n")
+			f.write("Training Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : train_data_sess, labels : train_label_sess})) + "\n")
+			f.write("Validation Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : val_data_sess, labels : val_label_sess})) + "\n")
+			f.write("Testing Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : test_data_sess, labels : test_label_sess})) + "\n\n")
+
+	print("Optimization Finished")
+
+	plt.plot(epoch_list, cost_list)
+	plt.xlabel("Epoch")
+	plt.ylabel("Cost Function")
+
+	plt.title("LSTM Training with Learning Rate " + str(learning_rate))
+
+	plt.savefig("LSTM_Training.png")
+
+	plt.clf()
