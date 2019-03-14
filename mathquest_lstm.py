@@ -173,7 +173,8 @@ batchSize = 32 #to split the dataset into batches to prevent overflowing of the 
 lstmUnits = 64 #number of units for LSTM
 numDimensions = 10 #number of nodes in the hidden layer
 learning_rate = 1e-4 #learning rate of this model
-training_epoch = 100
+training_epoch = 500
+reg_param = 0.1
 
 #defining the input of the network
 labels = tf.placeholder(tf.float32, [None, numClasses])
@@ -202,12 +203,13 @@ with tf.device("/gpu:0"):
 	accuracy = tf.reduce_mean(tf.cast(correctPred, tf.float32))
 
 	#defining the loss and also the optimizer for the network
-	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels))
+	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels)) \
+		   + reg_param * (tf.nn.l2_loss(weight) + tf.nn.l2_loss(bias))
 	optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate).minimize(loss)
 
 	init_op = tf.global_variables_initializer()
 
-f = open("lstm_190314_100epoch_minidata.txt", 'w')
+f = open("lstm_190314_1000epoch_reg.txt", 'w')
 f.write("Result of the Experiment\n\n")
 
 # #Phase 3 : Setting up the starting of the network evaluation (session setup)
@@ -264,7 +266,7 @@ with tf.Session() as sess:
 		total_cost = 0.
 		no_of_batches = int(len(train_data_sess) / batchSize)
 
-		for i in range(4):
+		for i in range(no_of_batches):
 			batch_in, batch_out = train_data_sess[ptr:ptr+batchSize], train_label_sess[ptr:ptr+batchSize]
 			ptr += batchSize
 
@@ -278,9 +280,9 @@ with tf.Session() as sess:
 
 		if epoch in [9, 19, 29, 39, 49, 59, 69, 79, 89, 99]:
 			f.write("During the " + str(epoch + 1) + "-th epoch:\n")
-			f.write("Training Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : train_data_sess[:128], labels : train_label_sess[:128]})) + "\n")
-			f.write("Validation Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : val_data_sess[:128], labels : val_label_sess[:128]})) + "\n")
-			f.write("Testing Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : test_data_sess[:128], labels : test_label_sess[:128]})) + "\n\n")
+			f.write("Training Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : train_data_sess, labels : train_label_sess})) + "\n")
+			f.write("Validation Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : val_data_sess, labels : val_label_sess})) + "\n")
+			f.write("Testing Accuracy = " + str(sess.run(accuracy, feed_dict = {input_data : test_data_sess, labels : test_label_sess})) + "\n\n")
 
 	print("Optimization Finished")
 
@@ -290,6 +292,6 @@ with tf.Session() as sess:
 
 	plt.title("LSTM Training (Mini-Data) with Learning Rate " + str(learning_rate))
 
-	plt.savefig("LSTM_Training_minidata.png")
+	plt.savefig("LSTM_Training_reg.png")
 
 	plt.clf()
