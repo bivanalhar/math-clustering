@@ -53,17 +53,13 @@ wordVectors = np.load('wordVectors.npy')
 # len_probstat = len(probstat_data)
 
 # #setting up the dataset for training, validation and testing
-# train_fetch = calculus_data[:int(0.7*len_calculus)] + linalg_data[:int(0.7*len_linalg)] \
-# 	+ probstat_data[:int(0.7*len_probstat)]
-# val_fetch = calculus_data[int(0.7*len_calculus):int(0.85*len_calculus)] \
-# 	+ linalg_data[int(0.7*len_linalg):int(0.85*len_linalg)] \
-# 	+ probstat_data[int(0.7*len_probstat):int(0.85*len_probstat)]
-# test_fetch = calculus_data[int(0.85*len_calculus):] + linalg_data[int(0.85*len_linalg):] \
-# 	+ probstat_data[int(0.85*len_probstat):]
+# train_fetch = calculus_data[:64] + linalg_data[:64] + probstat_data[:64]
+# val_fetch = calculus_data[64:96] + linalg_data[64:96] + probstat_data[64:96]
+# test_fetch = calculus_data[96:128] + linalg_data[96:128] + probstat_data[96:128]
 
 # train_data, train_label = [pair[0] for pair in train_fetch], [pair[1] for pair in train_fetch]
 # val_data, val_label = [pair[0] for pair in val_fetch], [pair[1] for pair in val_fetch]
-# test_data, test_label = [pair[0] for pair in test_fetch], [pair[1] for pair in test_fetch] 
+# test_data, test_label = [pair[0] for pair in test_fetch], [pair[1] for pair in test_fetch]
 # #######################################END OF PHASE 1########################################
 
 # #Testing the length of string to determine the maximum sequential length
@@ -126,54 +122,54 @@ wordVectors = np.load('wordVectors.npy')
 # 	test_data_num.append(numbered_sentence)
 
 # #write into csv file for the future network training and testing
-# with open('train_data.csv', mode='w') as csv_file:
+# with open('small_train_data.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(train_data_num)):
 # 		writer.writerow(train_data_num[i])
 
-# with open('val_data.csv', mode='w') as csv_file:
+# with open('small_val_data.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(val_data_num)):
 # 		writer.writerow(val_data_num[i])
 
-# with open('test_data.csv', mode='w') as csv_file:
+# with open('small_test_data.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(test_data_num)):
 # 		writer.writerow(test_data_num[i])
 
-# with open('train_label.csv', mode='w') as csv_file:
+# with open('small_train_label.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(train_label)):
 # 		writer.writerow(train_label[i])
 
-# with open('val_label.csv', mode='w') as csv_file:
+# with open('small_val_label.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(val_label)):
 # 		writer.writerow(val_label[i])
 
-# with open('test_label.csv', mode='w') as csv_file:
+# with open('small_test_label.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(test_label)):
 # 		writer.writerow(test_label[i])
-# #including all words and also its corresponding vectors
-# wordsList = np.load('wordsList.npy').tolist()
-# wordsList = [word.decode('UTF-8') for word in wordsList]
-# wordVectors = np.load('wordVectors.npy')
+#including all words and also its corresponding vectors
+wordsList = np.load('wordsList.npy').tolist()
+wordsList = [word.decode('UTF-8') for word in wordsList]
+wordVectors = np.load('wordVectors.npy')
 
 #Phase 2 : Setting up the network architecture
 numClasses = 3 # Linear Algebra, Calculus, Probability and Statistics
 maxSeqLength = 100 # to keep up with some lengthy problems
 batchSize = 32 #to split the dataset into batches to prevent overflowing of the data
-lstmUnits = 64 #number of units for LSTM
-numDimensions = 10 #number of nodes in the hidden layer
+lstmUnits = 512 #number of units for LSTM
+numDimensions = 50 #number of nodes in the hidden layer
 learning_rate = 1e-4 #learning rate of this model
-training_epoch = 500
+training_epoch = 100
 reg_param = 0.1
 
 #defining the input of the network
@@ -186,8 +182,8 @@ with tf.device("/gpu:0"):
 	data = tf.nn.embedding_lookup(wordVectors, input_data)
 
 	#begin defining the LSTM Cell for the network setup
-	lstmCell = tf.contrib.rnn.BasicLSTMCell(lstmUnits)
-	#lstmCell = tf.contrib.rnn.MultiRNNCell([lstmCell] * 4)
+	#lstmCellsingle = tf.contrib.rnn.BasicLSTMCell(lstmUnits)
+	lstmCell = tf.contrib.rnn.MultiRNNCell([tf.contrib.rnn.BasicLSTMCell(lstmUnits) for _ in range(4)])
 	lstmCell = tf.contrib.rnn.DropoutWrapper(cell = lstmCell, output_keep_prob = 0.75)
 	value, _ = tf.nn.dynamic_rnn(lstmCell, data, dtype = tf.float32)
 
@@ -205,11 +201,12 @@ with tf.device("/gpu:0"):
 	#defining the loss and also the optimizer for the network
 	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels)) \
 		   + reg_param * (tf.nn.l2_loss(weight) + tf.nn.l2_loss(bias))
+	#loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels))
 	optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate).minimize(loss)
 
 	init_op = tf.global_variables_initializer()
 
-f = open("lstm_190314_1000epoch_reg.txt", 'w')
+f = open("lstm_190315_100epoch.txt", 'w')
 f.write("Result of the Experiment\n\n")
 
 # #Phase 3 : Setting up the starting of the network evaluation (session setup)
@@ -275,7 +272,7 @@ with tf.Session() as sess:
 
 		epoch_list.append(epoch + 1)
 		cost_list.append(total_cost)
-
+		
 		print("Epoch", epoch + 1, "finished")
 
 		if epoch in [9, 19, 29, 39, 49, 59, 69, 79, 89, 99]:
@@ -290,8 +287,8 @@ with tf.Session() as sess:
 	plt.xlabel("Epoch")
 	plt.ylabel("Cost Function")
 
-	plt.title("LSTM Training (Mini-Data) with Learning Rate " + str(learning_rate))
+	plt.title("LSTM Training with Regularizer and Learning Rate " + str(learning_rate))
 
-	plt.savefig("LSTM_Training_reg.png")
+	plt.savefig("LSTM_Training_190315.png")
 
 	plt.clf()
