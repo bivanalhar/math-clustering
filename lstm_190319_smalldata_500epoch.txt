@@ -1,0 +1,61 @@
+Result of the Experiment
+
+Setup : LSTM Units = 512
+
+Regularizer = 0.1 and Learning Rate = 0.0001
+
+During the 10-th epoch:
+Training Accuracy = 69.79166666666666
+Validation Accuracy = 63.541666666666664
+Testing Accuracy = 20.312500000000004
+
+During the 50-th epoch:
+Training Accuracy = 86.45833333333333
+Validation Accuracy = 79.16666666666666
+Testing Accuracy = 26.562499999999993
+
+During the 100-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.20833333333333
+Testing Accuracy = 33.33333333333333
+
+During the 150-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.72916666666667
+Testing Accuracy = 33.33333333333333
+
+During the 200-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.72916666666667
+Testing Accuracy = 33.33333333333333
+
+During the 250-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 81.25
+Testing Accuracy = 33.33333333333333
+
+During the 300-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.72916666666667
+Testing Accuracy = 33.33333333333333
+
+During the 350-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.72916666666666
+Testing Accuracy = 33.33333333333333
+
+During the 400-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.20833333333333
+Testing Accuracy = 33.33333333333333
+
+During the 450-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.20833333333333
+Testing Accuracy = 33.33333333333333
+
+During the 500-th epoch:
+Training Accuracy = 99.99999999999999
+Validation Accuracy = 80.20833333333333
+Testing Accuracy = 33.33333333333333
+
