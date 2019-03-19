@@ -183,7 +183,7 @@ batchSize = 64 #to split the dataset into batches to prevent overflowing of the 
 lstmUnits = 512 #number of units for LSTM
 numDimensions = 50 #number of nodes in the hidden layer
 learning_rate = 1e-4 #learning rate of this model
-training_epoch = 500
+training_epoch = 600
 reg_param = 0.1
 
 #defining the input of the network
@@ -220,7 +220,7 @@ with tf.device("/gpu:0"):
 
 	init_op = tf.global_variables_initializer()
 
-f = open("lstm_190319_smalldata_500epoch.txt", 'w')
+f = open("lstm_190320_smalldata_600epoch.txt", 'w')
 f.write("Result of the Experiment\n\n")
 
 # #Phase 3 : Setting up the starting of the network evaluation (session setup)
@@ -266,9 +266,23 @@ with open('small_test_label.csv') as csv_file:
 		label_input = [float(i) for i in row]
 		test_label_sess.append(label_input)
 
+train_sess = list(zip(train_data_sess, train_label_sess))
+random.shuffle(train_sess)
+train_data_sess, train_label_sess = zip(*train_sess)
+
+val_sess = list(zip(val_data_sess, val_label_sess))
+random.shuffle(val_sess)
+val_data_sess, val_label_sess = zip(*val_sess)
+
+test_sess = list(zip(test_data_sess, test_label_sess))
+random.shuffle(test_sess)
+test_data_sess, test_label_sess = zip(*test_sess)
+
 f.write("Setup : LSTM Units = " + str(lstmUnits) + "\n\n")
 f.write("Regularizer = " + str(reg_param) + " and Learning Rate = " + str(learning_rate) + "\n\n")
-epoch_list, cost_list = [], []
+epoch_list, cost_list, cost_val_list = [], [], []
+
+saver = tf.train.Saver()
 
 with tf.Session() as sess:
 	sess.run(init_op)
@@ -276,6 +290,7 @@ with tf.Session() as sess:
 	for epoch in range(training_epoch):
 		ptr = 0
 		total_cost = 0.
+		total_cost_val = 0.
 		no_of_batches = int(len(train_data_sess) / batchSize)
 		no_of_batches_val = int(len(val_data_sess) / batchSize)
 		no_of_batches_test = int(len(test_data_sess) / batchSize)
@@ -287,8 +302,17 @@ with tf.Session() as sess:
 			_, cost = sess.run([optimizer, loss], feed_dict = {input_data : batch_in, labels : batch_out})
 			total_cost += cost / no_of_batches
 
+		ptr = 0
+		for i in range(no_of_batches_val):
+			batch_in, batch_out = val_data_sess[ptr:ptr+batchSize], val_label_sess[ptr:ptr+batchSize]
+			ptr += batchSize
+
+			cost_val = sess.run(loss, feed_dict = {input_data : batch_in, labels : batch_out})
+			total_cost_val += cost_val / no_of_batches_val
+
 		epoch_list.append(epoch + 1)
 		cost_list.append(total_cost)
+		cost_val_list.append(total_cost_val)
 
 		ptr = 0
 		acc_train, acc_val, acc_test = 0.0, 0.0, 0.0
@@ -317,7 +341,7 @@ with tf.Session() as sess:
 
 		print("Epoch", epoch + 1, "finished")
 
-		if epoch in [9, 49, 99, 149, 199, 249, 299, 349, 399, 449, 499]:
+		if epoch in [9, 59, 119, 179, 239, 299, 359, 419, 479, 539, 599]:
 			f.write("During the " + str(epoch + 1) + "-th epoch:\n")
 			f.write("Training Accuracy = " + str(100 * acc_train) + "\n")
 			f.write("Validation Accuracy = " + str(100 * acc_val) + "\n")
@@ -325,12 +349,14 @@ with tf.Session() as sess:
 
 	print("Optimization Finished")
 
-	plt.plot(epoch_list, cost_list)
+	saver.save(sess, "./model_190320_small.ckpt")
+	
+	plt.plot(epoch_list, cost_list, "r", epoch_list, cost_val_list, "b")
 	plt.xlabel("Epoch")
 	plt.ylabel("Cost Function")
 
 	plt.title("LSTM Training with Regularizer and Learning Rate " + str(learning_rate))
 
-	plt.savefig("LSTM_Training_190319_smalldata_500epoch.png")
+	plt.savefig("LSTM_Training_190320_600epoch_smalldata.png")
 
 	plt.clf()
