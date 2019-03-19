@@ -48,19 +48,7 @@ with open('eng_probstat.csv') as csv_file:
 		pair = (row[1], one_hot(row[2]))
 		probstat_data.append(pair)
 
-# len_calculus = len(calculus_data)
-# len_linalg = len(linalg_data)
-# len_probstat = len(probstat_data)
-
-# #setting up the dataset for training, validation and testing
-# train_fetch = calculus_data[:64] + linalg_data[:64] + probstat_data[:64]
-# val_fetch = calculus_data[64:96] + linalg_data[64:96] + probstat_data[64:96]
-# test_fetch = calculus_data[96:128] + linalg_data[96:128] + probstat_data[96:128]
-
-# train_data, train_label = [pair[0] for pair in train_fetch], [pair[1] for pair in train_fetch]
-# val_data, val_label = [pair[0] for pair in val_fetch], [pair[1] for pair in val_fetch]
-# test_data, test_label = [pair[0] for pair in test_fetch], [pair[1] for pair in test_fetch]
-#######################################END OF PHASE 1########################################
+# # #######################################END OF PHASE 1########################################
 
 strip_special = re.compile("[^A-Za-z0-9 +\-*/()=]+")
 
@@ -68,122 +56,123 @@ def cleanSentences(string):
 	string = string.lower().replace("<br />", " ")
 	return re.sub(strip_special, "", string.lower())
 
-count_50_calculus , count_50_linalg, count_50_probstat = 0, 0, 0
-count_100_calculus, count_100_linalg, count_100_probstat = 0, 0, 0
-
+calculus_new, linalg_new, probstat_new = [], [], []
 for i in range(len(calculus_data)):
-	if len(cleanSentences(calculus_data[i][0]).split()) <= 50:
-		count_50_calculus += 1
-	if len(cleanSentences(calculus_data[i][0]).split()) <= 100:
-		count_100_calculus += 1
+	if 10 <= len(cleanSentences(calculus_data[i][0]).split()) <= 50:
+		calculus_new.append(calculus_data[i])
 
 for i in range(len(linalg_data)):
-	if len(cleanSentences(linalg_data[i][0]).split()) <= 50:
-		count_50_linalg += 1
-	if len(cleanSentences(linalg_data[i][0]).split()) <= 100:
-		count_100_linalg += 1
+	if 10 <= len(cleanSentences(linalg_data[i][0]).split()) <= 50:
+		linalg_new.append(linalg_data[i])
 
 for i in range(len(probstat_data)):
-	if len(cleanSentences(probstat_data[i][0]).split()) <= 50:
-		count_50_probstat += 1
-	if len(cleanSentences(probstat_data[i][0]).split()) <= 100:
-		count_100_probstat += 1
+	if 10 <= len(cleanSentences(probstat_data[i][0]).split()) <= 50:
+		probstat_new.append(probstat_data[i])
 
-print("number of sentences in Calculus less than 50 is", count_50_calculus)
-print("number of sentences in Calculus less than 100 is", count_100_calculus)
-print("\n")
+len_calculus = len(calculus_new)
+len_linalg = len(linalg_new)
+len_probstat = len(probstat_new)
 
-print("number of sentences in Linear Algebra less than 50 is", count_50_linalg)
-print("number of sentences in Linear Algebra less than 100 is", count_100_linalg)
-print("\n")
+#setting up the dataset for training, validation and testing
+# train_fetch = calculus_new[:int(0.7*len_calculus)] + linalg_new[:int(0.7*len_linalg)] \
+# 	+ probstat_new[:int(0.7*len_probstat)]
+# val_fetch = calculus_new[int(0.7*len_calculus):int(0.85*len_calculus)] \
+# 	+ linalg_new[int(0.7*len_linalg):int(0.85*len_linalg)] \
+# 	+ probstat_new[int(0.7*len_probstat):int(0.85*len_probstat)]
+# test_fetch = calculus_new[int(0.85*len_calculus):] + linalg_new[int(0.85*len_linalg):] \
+# 	+ probstat_new[int(0.85*len_probstat):]
 
-print("number of sentences in ProbStat less than 50 is", count_50_probstat)
-print("number of sentences in ProbStat less than 100 is", count_100_probstat)
-print("\n")
+train_fetch = calculus_new[:128] + linalg_new[:128] + probstat_new[:128]
+val_fetch = calculus_new[128:192] + linalg_new[128:192] + probstat_new[128:192]
+test_fetch = calculus_new[192:256] + linalg_new[192:256] + probstat_new[192:256]
 
-# train_data_num, val_data_num, test_data_num = [], [], []
+train_data, train_label = [pair[0] for pair in train_fetch], [pair[1] for pair in train_fetch]
+val_data, val_label = [pair[0] for pair in val_fetch], [pair[1] for pair in val_fetch]
+test_data, test_label = [pair[0] for pair in test_fetch], [pair[1] for pair in test_fetch]
 
-# for i in range(len(train_data)):
-# 	numbered_sentence = [0 for i in range(100)]
-# 	sentence = cleanSentences(train_data[i])
-# 	sentence = sentence.split()
-# 	index = 0
+train_data_num, val_data_num, test_data_num = [], [], []
 
-# 	for word in sentence:
-# 		if index < 100:
-# 			try:
-# 				numbered_sentence[index] = wordsList.index(word)
-# 			except ValueError:
-# 				numbered_sentence[index] = 399999 #Vector for unknown words
-# 		index += 1
-# 	train_data_num.append(numbered_sentence)
+for i in range(len(train_data)):
+	numbered_sentence = [0 for i in range(50)]
+	sentence = cleanSentences(train_data[i])
+	sentence = sentence.split()
+	index = 0
 
-# for i in range(len(val_data)):
-# 	numbered_sentence = [0 for i in range(100)]
-# 	sentence = cleanSentences(val_data[i])
-# 	sentence = sentence.split()
-# 	index = 0
+	for word in sentence:
+		if index < 50:
+			try:
+				numbered_sentence[index] = wordsList.index(word)
+			except ValueError:
+				numbered_sentence[index] = 399999 #Vector for unknown words
+		index += 1
+	train_data_num.append(numbered_sentence)
 
-# 	for word in sentence:
-# 		if index < 100:
-# 			try:
-# 				numbered_sentence[index] = wordsList.index(word)
-# 			except ValueError:
-# 				numbered_sentence[index] = 399999 #Vector for unknown words
-# 		index += 1
-# 	val_data_num.append(numbered_sentence)
+for i in range(len(val_data)):
+	numbered_sentence = [0 for i in range(50)]
+	sentence = cleanSentences(val_data[i])
+	sentence = sentence.split()
+	index = 0
 
-# for i in range(len(test_data)):
-# 	numbered_sentence = [0 for i in range(100)]
-# 	sentence = cleanSentences(train_data[i])
-# 	sentence = sentence.split()
-# 	index = 0
+	for word in sentence:
+		if index < 50:
+			try:
+				numbered_sentence[index] = wordsList.index(word)
+			except ValueError:
+				numbered_sentence[index] = 399999 #Vector for unknown words
+		index += 1
+	val_data_num.append(numbered_sentence)
 
-# 	for word in sentence:
-# 		if index < 100:
-# 			try:
-# 				numbered_sentence[index] = wordsList.index(word)
-# 			except ValueError:
-# 				numbered_sentence[index] = 399999 #Vector for unknown words
-# 		index += 1
-# 	test_data_num.append(numbered_sentence)
+for i in range(len(test_data)):
+	numbered_sentence = [0 for i in range(50)]
+	sentence = cleanSentences(train_data[i])
+	sentence = sentence.split()
+	index = 0
 
-# #write into csv file for the future network training and testing
-# with open('small_train_data.csv', mode='w') as csv_file:
-# 	writer = csv.writer(csv_file)
+	for word in sentence:
+		if index < 50:
+			try:
+				numbered_sentence[index] = wordsList.index(word)
+			except ValueError:
+				numbered_sentence[index] = 399999 #Vector for unknown words
+		index += 1
+	test_data_num.append(numbered_sentence)
 
-# 	for i in range(len(train_data_num)):
-# 		writer.writerow(train_data_num[i])
+#write into csv file for the future network training and testing
+with open('small_train_data.csv', mode='w') as csv_file:
+	writer = csv.writer(csv_file)
 
-# with open('small_val_data.csv', mode='w') as csv_file:
-# 	writer = csv.writer(csv_file)
+	for i in range(len(train_data_num)):
+		writer.writerow(train_data_num[i])
 
-# 	for i in range(len(val_data_num)):
-# 		writer.writerow(val_data_num[i])
+with open('small_val_data.csv', mode='w') as csv_file:
+	writer = csv.writer(csv_file)
 
-# with open('small_test_data.csv', mode='w') as csv_file:
-# 	writer = csv.writer(csv_file)
+	for i in range(len(val_data_num)):
+		writer.writerow(val_data_num[i])
 
-# 	for i in range(len(test_data_num)):
-# 		writer.writerow(test_data_num[i])
+with open('small_test_data.csv', mode='w') as csv_file:
+	writer = csv.writer(csv_file)
 
-# with open('small_train_label.csv', mode='w') as csv_file:
-# 	writer = csv.writer(csv_file)
+	for i in range(len(test_data_num)):
+		writer.writerow(test_data_num[i])
 
-# 	for i in range(len(train_label)):
-# 		writer.writerow(train_label[i])
+with open('small_train_label.csv', mode='w') as csv_file:
+	writer = csv.writer(csv_file)
 
-# with open('small_val_label.csv', mode='w') as csv_file:
-# 	writer = csv.writer(csv_file)
+	for i in range(len(train_label)):
+		writer.writerow(train_label[i])
 
-# 	for i in range(len(val_label)):
-# 		writer.writerow(val_label[i])
+with open('small_val_label.csv', mode='w') as csv_file:
+	writer = csv.writer(csv_file)
 
-# with open('small_test_label.csv', mode='w') as csv_file:
-# 	writer = csv.writer(csv_file)
+	for i in range(len(val_label)):
+		writer.writerow(val_label[i])
 
-# 	for i in range(len(test_label)):
-# 		writer.writerow(test_label[i])
+with open('small_test_label.csv', mode='w') as csv_file:
+	writer = csv.writer(csv_file)
+
+	for i in range(len(test_label)):
+		writer.writerow(test_label[i])
 
 #------------------------------------------------------------------------------------------#
 
@@ -194,12 +183,12 @@ print("\n")
 
 # #Phase 2 : Setting up the network architecture
 # numClasses = 3 # Linear Algebra, Calculus, Probability and Statistics
-# maxSeqLength = 100 # to keep up with some lengthy problems
-# batchSize = 32 #to split the dataset into batches to prevent overflowing of the data
-# lstmUnits = 512 #number of units for LSTM
+# maxSeqLength = 50 # to keep up with some lengthy problems
+# batchSize = 64 #to split the dataset into batches to prevent overflowing of the data
+# lstmUnits = 256 #number of units for LSTM
 # numDimensions = 50 #number of nodes in the hidden layer
-# learning_rate = 1e-4 #learning rate of this model
-# training_epoch = 1000
+# learning_rate = 1e-3 #learning rate of this model
+# training_epoch = 500
 # reg_param = 0.1
 
 # #defining the input of the network
@@ -214,7 +203,7 @@ print("\n")
 # 	#begin defining the LSTM Cell for the network setup
 # 	#lstmCellsingle = tf.contrib.rnn.BasicLSTMCell(lstmUnits)
 # 	lstmCell = tf.contrib.rnn.MultiRNNCell([tf.contrib.rnn.BasicLSTMCell(lstmUnits) for _ in range(4)])
-# 	lstmCell = tf.contrib.rnn.DropoutWrapper(cell = lstmCell, output_keep_prob = 0.75)
+# 	lstmCell = tf.contrib.rnn.DropoutWrapper(cell = lstmCell, output_keep_prob = 0.8)
 # 	value, _ = tf.nn.dynamic_rnn(lstmCell, data, dtype = tf.float32)
 
 # 	weight = tf.get_variable("weight", shape = [lstmUnits, numClasses], initializer = tf.contrib.layers.xavier_initializer())
