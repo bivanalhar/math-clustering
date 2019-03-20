@@ -69,22 +69,30 @@ wordVectors = np.load('wordVectors.npy')
 # 	if 10 <= len(cleanSentences(probstat_data[i][0]).split()) <= 50:
 # 		probstat_new.append(probstat_data[i])
 
+# random.shuffle(calculus_new)
+# random.shuffle(linalg_new)
+# random.shuffle(probstat_new)
+
 # len_calculus = len(calculus_new)
 # len_linalg = len(linalg_new)
 # len_probstat = len(probstat_new)
 
 # #setting up the dataset for training, validation and testing
-# # train_fetch = calculus_new[:int(0.7*len_calculus)] + linalg_new[:int(0.7*len_linalg)] \
-# # 	+ probstat_new[:int(0.7*len_probstat)]
-# # val_fetch = calculus_new[int(0.7*len_calculus):int(0.85*len_calculus)] \
-# # 	+ linalg_new[int(0.7*len_linalg):int(0.85*len_linalg)] \
-# # 	+ probstat_new[int(0.7*len_probstat):int(0.85*len_probstat)]
-# # test_fetch = calculus_new[int(0.85*len_calculus):] + linalg_new[int(0.85*len_linalg):] \
-# # 	+ probstat_new[int(0.85*len_probstat):]
+# train_fetch = calculus_new[:int(0.7*len_calculus)] + linalg_new[:int(0.7*len_linalg)] \
+#  	+ probstat_new[:int(0.7*len_probstat)]
+# val_fetch = calculus_new[int(0.7*len_calculus):int(0.85*len_calculus)] \
+#  	+ linalg_new[int(0.7*len_linalg):int(0.85*len_linalg)] \
+#  	+ probstat_new[int(0.7*len_probstat):int(0.85*len_probstat)]
+# test_fetch = calculus_new[int(0.85*len_calculus):] + linalg_new[int(0.85*len_linalg):] \
+#  	+ probstat_new[int(0.85*len_probstat):]
 
-# train_fetch = calculus_new[:128] + linalg_new[:128] + probstat_new[:128]
-# val_fetch = calculus_new[128:192] + linalg_new[128:192] + probstat_new[128:192]
-# test_fetch = calculus_new[192:256] + linalg_new[192:256] + probstat_new[192:256]
+# #train_fetch = calculus_new[:128] + linalg_new[:128] + probstat_new[:128]
+# #val_fetch = calculus_new[128:192] + linalg_new[128:192] + probstat_new[128:192]
+# #test_fetch = calculus_new[192:256] + linalg_new[192:256] + probstat_new[192:256]
+
+# random.shuffle(train_fetch)
+# random.shuffle(val_fetch)
+# random.shuffle(test_fetch)
 
 # train_data, train_label = [pair[0] for pair in train_fetch], [pair[1] for pair in train_fetch]
 # val_data, val_label = [pair[0] for pair in val_fetch], [pair[1] for pair in val_fetch]
@@ -138,37 +146,37 @@ wordVectors = np.load('wordVectors.npy')
 # 	test_data_num.append(numbered_sentence)
 
 # #write into csv file for the future network training and testing
-# with open('small_train_data.csv', mode='w') as csv_file:
+# with open('train_data.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(train_data_num)):
 # 		writer.writerow(train_data_num[i])
 
-# with open('small_val_data.csv', mode='w') as csv_file:
+# with open('val_data.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(val_data_num)):
 # 		writer.writerow(val_data_num[i])
 
-# with open('small_test_data.csv', mode='w') as csv_file:
+# with open('test_data.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(test_data_num)):
 # 		writer.writerow(test_data_num[i])
 
-# with open('small_train_label.csv', mode='w') as csv_file:
+# with open('train_label.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(train_label)):
 # 		writer.writerow(train_label[i])
 
-# with open('small_val_label.csv', mode='w') as csv_file:
+# with open('val_label.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(val_label)):
 # 		writer.writerow(val_label[i])
 
-# with open('small_test_label.csv', mode='w') as csv_file:
+# with open('test_label.csv', mode='w') as csv_file:
 # 	writer = csv.writer(csv_file)
 
 # 	for i in range(len(test_label)):
@@ -182,8 +190,8 @@ maxSeqLength = 50 # to keep up with some lengthy problems
 batchSize = 64 #to split the dataset into batches to prevent overflowing of the data
 lstmUnits = 512 #number of units for LSTM
 numDimensions = 50 #number of nodes in the hidden layer
-learning_rate = 1e-4 #learning rate of this model
-training_epoch = 600
+learning_rate = 3e-4 #learning rate of this model
+training_epoch = 150
 reg_param = 0.1
 
 #defining the input of the network
@@ -220,7 +228,7 @@ with tf.device("/gpu:0"):
 
 	init_op = tf.global_variables_initializer()
 
-f = open("lstm_190320_smalldata_600epoch.txt", 'w')
+f = open("lstm_190320_150epoch.txt", 'w')
 f.write("Result of the Experiment\n\n")
 
 # #Phase 3 : Setting up the starting of the network evaluation (session setup)
@@ -230,37 +238,37 @@ train_data_sess, train_label_sess = [], []
 val_data_sess, val_label_sess = [], []
 test_data_sess, test_label_sess = [], []
 
-with open('small_train_data.csv') as csv_file:
+with open('train_data.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ",")
 	for row in csv_reader:
 		data_input = [int(i) for i in row]
 		train_data_sess.append(data_input)
 
-with open('small_train_label.csv') as csv_file:
+with open('train_label.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ",")
 	for row in csv_reader:
 		label_input = [float(i) for i in row]
 		train_label_sess.append(label_input)
 
-with open('small_val_data.csv') as csv_file:
+with open('val_data.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ",")
 	for row in csv_reader:
 		data_input = [int(i) for i in row]
 		val_data_sess.append(data_input)
 
-with open('small_val_label.csv') as csv_file:
+with open('val_label.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ",")
 	for row in csv_reader:
 		label_input = [float(i) for i in row]
 		val_label_sess.append(label_input)
 
-with open('small_test_data.csv') as csv_file:
+with open('test_data.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ",")
 	for row in csv_reader:
 		data_input = [int(i) for i in row]
 		test_data_sess.append(data_input)
 
-with open('small_test_label.csv') as csv_file:
+with open('test_label.csv') as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter = ",")
 	for row in csv_reader:
 		label_input = [float(i) for i in row]
@@ -281,6 +289,7 @@ test_data_sess, test_label_sess = zip(*test_sess)
 f.write("Setup : LSTM Units = " + str(lstmUnits) + "\n\n")
 f.write("Regularizer = " + str(reg_param) + " and Learning Rate = " + str(learning_rate) + "\n\n")
 epoch_list, cost_list, cost_val_list = [], [], []
+#epoch_list, cost_list = [], []
 
 saver = tf.train.Saver()
 
@@ -306,7 +315,7 @@ with tf.Session() as sess:
 		for i in range(no_of_batches_val):
 			batch_in, batch_out = val_data_sess[ptr:ptr+batchSize], val_label_sess[ptr:ptr+batchSize]
 			ptr += batchSize
-
+		
 			cost_val = sess.run(loss, feed_dict = {input_data : batch_in, labels : batch_out})
 			total_cost_val += cost_val / no_of_batches_val
 
@@ -341,7 +350,7 @@ with tf.Session() as sess:
 
 		print("Epoch", epoch + 1, "finished")
 
-		if epoch in [9, 59, 119, 179, 239, 299, 359, 419, 479, 539, 599]:
+		if epoch in [14, 29, 44, 69, 74, 89, 104, 119, 134, 149]:
 			f.write("During the " + str(epoch + 1) + "-th epoch:\n")
 			f.write("Training Accuracy = " + str(100 * acc_train) + "\n")
 			f.write("Validation Accuracy = " + str(100 * acc_val) + "\n")
@@ -349,14 +358,14 @@ with tf.Session() as sess:
 
 	print("Optimization Finished")
 
-	saver.save(sess, "./model_190320_small.ckpt")
+	saver.save(sess, "./model_190320.ckpt")
 	
-	plt.plot(epoch_list, cost_list, "r", epoch_list, cost_val_list, "b")
+	plt.plot(epoch_list, cost_list)
 	plt.xlabel("Epoch")
 	plt.ylabel("Cost Function")
 
 	plt.title("LSTM Training with Regularizer and Learning Rate " + str(learning_rate))
 
-	plt.savefig("LSTM_Training_190320_600epoch_smalldata.png")
+	plt.savefig("LSTM_Training_190320_150epoch.png")
 
 	plt.clf()

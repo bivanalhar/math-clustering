@@ -1,0 +1,56 @@
+Result of the Experiment
+
+Setup : LSTM Units = 512
+
+Regularizer = 0.1 and Learning Rate = 0.0003
+
+During the 15-th epoch:
+Training Accuracy = 92.01530612244913
+Validation Accuracy = 87.68028846153845
+Testing Accuracy = 36.05769230769229
+
+During the 30-th epoch:
+Training Accuracy = 95.89923469387794
+Validation Accuracy = 89.84374999999999
+Testing Accuracy = 37.86057692307693
+
+During the 45-th epoch:
+Training Accuracy = 97.07908163265347
+Validation Accuracy = 90.95552884615384
+Testing Accuracy = 37.860576923076934
+
+During the 70-th epoch:
+Training Accuracy = 99.69387755102092
+Validation Accuracy = 92.27764423076921
+Testing Accuracy = 37.53004807692307
+
+During the 75-th epoch:
+Training Accuracy = 99.42602040816375
+Validation Accuracy = 92.4278846153846
+Testing Accuracy = 37.40985576923077
+
+During the 90-th epoch:
+Training Accuracy = 99.4579081632658
+Validation Accuracy = 92.2776442307692
+Testing Accuracy = 37.3798076923077
+
+During the 105-th epoch:
+Training Accuracy = 99.54719387755152
+Validation Accuracy = 92.75841346153844
+Testing Accuracy = 37.49999999999999
+
+During the 120-th epoch:
+Training Accuracy = 99.94260204081685
+Validation Accuracy = 93.68990384615383
+Testing Accuracy = 37.34975961538462
+
+During the 135-th epoch:
+Training Accuracy = 99.9808673469393
+Validation Accuracy = 92.7283653846154
+Testing Accuracy = 37.34975961538462
+
+During the 150-th epoch:
+Training Accuracy = 99.757653061225
+Validation Accuracy = 92.578125
+Testing Accuracy = 37.43990384615385
+
