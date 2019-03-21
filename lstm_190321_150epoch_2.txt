@@ -1,0 +1,81 @@
+Result of the Experiment
+
+Setup : LSTM Units = 512
+
+Regularizer = 0.1 and Learning Rate = 0.0003
+
+During the 10-th epoch:
+Training Accuracy = 91.43186475409834
+Validation Accuracy = 88.31129807692307
+Testing Accuracy = 39.09254807692308
+
+During the 20-th epoch:
+Training Accuracy = 93.80122950819677
+Validation Accuracy = 89.12259615384615
+Testing Accuracy = 37.92067307692308
+
+During the 30-th epoch:
+Training Accuracy = 95.58145491803273
+Validation Accuracy = 89.45312499999999
+Testing Accuracy = 38.82211538461539
+
+During the 40-th epoch:
+Training Accuracy = 97.74590163934418
+Validation Accuracy = 90.05408653846153
+Testing Accuracy = 38.581730769230774
+
+During the 50-th epoch:
+Training Accuracy = 99.14830942622949
+Validation Accuracy = 92.15745192307692
+Testing Accuracy = 38.76201923076924
+
+During the 60-th epoch:
+Training Accuracy = 99.39805327868851
+Validation Accuracy = 91.82692307692308
+Testing Accuracy = 38.16105769230769
+
+During the 70-th epoch:
+Training Accuracy = 99.68621926229511
+Validation Accuracy = 92.3076923076923
+Testing Accuracy = 38.37139423076923
+
+During the 80-th epoch:
+Training Accuracy = 99.17392418032783
+Validation Accuracy = 91.76682692307693
+Testing Accuracy = 38.371394230769226
+
+During the 90-th epoch:
+Training Accuracy = 99.51972336065573
+Validation Accuracy = 92.24759615384616
+Testing Accuracy = 38.28125000000001
+
+During the 100-th epoch:
+Training Accuracy = 99.93596311475417
+Validation Accuracy = 92.96875000000001
+Testing Accuracy = 38.40144230769231
+
+During the 110-th epoch:
+Training Accuracy = 99.76306352459021
+Validation Accuracy = 92.3076923076923
+Testing Accuracy = 38.52163461538461
+
+During the 120-th epoch:
+Training Accuracy = 99.85911885245908
+Validation Accuracy = 92.18750000000001
+Testing Accuracy = 38.49158653846153
+
+During the 130-th epoch:
+Training Accuracy = 99.9871926229509
+Validation Accuracy = 92.75841346153847
+Testing Accuracy = 38.46153846153846
+
+During the 140-th epoch:
+Training Accuracy = 99.9871926229509
+Validation Accuracy = 92.75841346153847
+Testing Accuracy = 38.46153846153846
+
+During the 150-th epoch:
+Training Accuracy = 99.9871926229509
+Validation Accuracy = 92.84855769230771
+Testing Accuracy = 38.46153846153846
+
