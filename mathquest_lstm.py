@@ -58,15 +58,15 @@ def cleanSentences(string):
 
 calculus_new, linalg_new, probstat_new = [], [], []
 for i in range(len(calculus_data)):
-	if 10 <= len(cleanSentences(calculus_data[i][0]).split()) <= 50:
+	if len(cleanSentences(calculus_data[i][0]).split()) <= 100:
 		calculus_new.append(calculus_data[i])
 
 for i in range(len(linalg_data)):
-	if 10 <= len(cleanSentences(linalg_data[i][0]).split()) <= 50:
+	if len(cleanSentences(linalg_data[i][0]).split()) <= 100:
 		linalg_new.append(linalg_data[i])
 
 for i in range(len(probstat_data)):
-	if 10 <= len(cleanSentences(probstat_data[i][0]).split()) <= 50:
+	if len(cleanSentences(probstat_data[i][0]).split()) <= 100:
 		probstat_new.append(probstat_data[i])
 
 random.shuffle(calculus_new)
@@ -100,18 +100,18 @@ test_data, test_label = [pair[0] for pair in test_fetch], [pair[1] for pair in t
 
 train_data_num, val_data_num, test_data_num = [], [], []
 
-csv_file = open('train_data_sentence_3.csv', mode = 'w')
+csv_file = open('train_data_sentence_6.csv', mode = 'w')
 writer = csv.writer(csv_file)
 
 for i in range(len(train_data)):
 	writer.writerow(train_fetch[i])
-	numbered_sentence = [0 for i in range(50)]
+	numbered_sentence = [0 for i in range(100)]
 	sentence = cleanSentences(train_data[i])
 	sentence = sentence.split()
 	index = 0
 
 	for word in sentence:
-		if index < 50:
+		if index < 100:
 			try:
 				numbered_sentence[index] = wordsList.index(word)
 			except ValueError:
@@ -121,18 +121,18 @@ for i in range(len(train_data)):
 
 csv_file.close()
 
-csv_file = open('val_data_sentence_3.csv', mode = 'w')
+csv_file = open('val_data_sentence_6.csv', mode = 'w')
 writer = csv.writer(csv_file)
 
 for i in range(len(val_data)):
 	writer.writerow(val_fetch[i])
-	numbered_sentence = [0 for i in range(50)]
+	numbered_sentence = [0 for i in range(100)]
 	sentence = cleanSentences(val_data[i])
 	sentence = sentence.split()
 	index = 0
 
 	for word in sentence:
-		if index < 50:
+		if index < 100:
 			try:
 				numbered_sentence[index] = wordsList.index(word)
 			except ValueError:
@@ -142,18 +142,18 @@ for i in range(len(val_data)):
 
 csv_file.close()
 
-csv_file = open('test_data_sentence_3.csv', mode = 'w')
+csv_file = open('test_data_sentence_6.csv', mode = 'w')
 writer = csv.writer(csv_file)
 
 for i in range(len(test_data)):
 	writer.writerow(test_fetch[i])
-	numbered_sentence = [0 for i in range(50)]
-	sentence = cleanSentences(train_data[i])
+	numbered_sentence = [0 for i in range(100)]
+	sentence = cleanSentences(test_data[i])
 	sentence = sentence.split()
 	index = 0
 
 	for word in sentence:
-		if index < 50:
+		if index < 100:
 			try:
 				numbered_sentence[index] = wordsList.index(word)
 			except ValueError:
@@ -204,7 +204,7 @@ with open('test_label.csv', mode='w') as csv_file:
 
 #Phase 2 : Setting up the network architecture
 numClasses = 3 # Linear Algebra, Calculus, Probability and Statistics
-maxSeqLength = 50 # to keep up with some lengthy problems
+maxSeqLength = 100 # to keep up with some lengthy problems
 batchSize = 128 #to split the dataset into batches to prevent overflowing of the data
 lstmUnits = 512 #number of units for LSTM
 numDimensions = 50 #number of nodes in the hidden layer
@@ -246,7 +246,7 @@ with tf.device("/gpu:0"):
 
 	init_op = tf.global_variables_initializer()
 
-f = open("lstm_190321_150epoch_3.txt", 'w')
+f = open("lstm_190321_150epoch_6.txt", 'w')
 f.write("Result of the Experiment\n\n")
 
 # #Phase 3 : Setting up the starting of the network evaluation (session setup)
@@ -376,7 +376,7 @@ with tf.Session() as sess:
 
 	print("Optimization Finished")
 
-	saver.save(sess, "./model_190321_3.ckpt")
+	saver.save(sess, "./model_190321_6.ckpt")
 	
 	plt.plot(epoch_list, cost_list, "b", epoch_list, cost_val_list, "r")
 	plt.xlabel("Epoch")
@@ -384,6 +384,6 @@ with tf.Session() as sess:
 
 	plt.title("LSTM Training with Regularizer and Learning Rate " + str(learning_rate))
 
-	plt.savefig("LSTM_Training_190321_150epoch_3.png")
+	plt.savefig("LSTM_Training_190321_150epoch_6.png")
 
 	plt.clf()
